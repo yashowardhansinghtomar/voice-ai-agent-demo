@@ -1,0 +1,6 @@
+# Standard-library demo.
+# Optional future integrations:
+# groq
+# faster-whisper
+# pyttsx3
+
