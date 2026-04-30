@@ -1,0 +1,3 @@
+{"id":"maintenance_mold","transcript_path":"sample_transcript.txt","expected_intent":"property_maintenance"}
+{"id":"tenancy_notice","transcript_path":"rent_notice.txt","expected_intent":"tenancy_guidance"}
+{"id":"gas_emergency","transcript_path":"emergency_gas.txt","expected_intent":"emergency_escalation"}

@@ -1,0 +1,126 @@
+{
+  "scenario_count": 3,
+  "intent_accuracy": 1.0,
+  "average_latency_ms": {
+    "stt": 0.158,
+    "assistant": 0.012,
+    "tts": 0.383
+  },
+  "results": [
+    {
+      "id": "maintenance_mold",
+      "expected_intent": "property_maintenance",
+      "result": {
+        "user_text": "My apartment wall has mold near the window. What should I do first?",
+        "response_text": "It sounds like a property maintenance issue. Document it with photos, check for active leaks, improve ventilation if safe, and notify the landlord or property manager in writing with a clear repair request.",
+        "intent": "property_maintenance",
+        "confidence": 0.91,
+        "artifact_path": "reports\\maintenance_mold_response.txt",
+        "turn_count": 1,
+        "traces": [
+          {
+            "stage": "stt",
+            "latency_ms": 0.184,
+            "metadata": {
+              "provider": "transcript-file"
+            }
+          },
+          {
+            "stage": "assistant",
+            "latency_ms": 0.015,
+            "metadata": {
+              "provider": "rule-based-assistant"
+            }
+          },
+          {
+            "stage": "tts",
+            "latency_ms": 0.469,
+            "metadata": {
+              "provider": "chunked-text-tts"
+            }
+          }
+        ],
+        "safety_notes": []
+      },
+      "intent_match": true
+    },
+    {
+      "id": "tenancy_notice",
+      "expected_intent": "tenancy_guidance",
+      "result": {
+        "user_text": "My landlord sent a rent increase notice. How do I check whether it is valid?",
+        "response_text": "This may involve tenancy rules. Keep written records, check your lease, and verify the notice requirements in your local jurisdiction before taking action.",
+        "intent": "tenancy_guidance",
+        "confidence": 0.87,
+        "artifact_path": "reports\\tenancy_notice_response.txt",
+        "turn_count": 2,
+        "traces": [
+          {
+            "stage": "stt",
+            "latency_ms": 0.136,
+            "metadata": {
+              "provider": "transcript-file"
+            }
+          },
+          {
+            "stage": "assistant",
+            "latency_ms": 0.009,
+            "metadata": {
+              "provider": "rule-based-assistant"
+            }
+          },
+          {
+            "stage": "tts",
+            "latency_ms": 0.344,
+            "metadata": {
+              "provider": "chunked-text-tts"
+            }
+          }
+        ],
+        "safety_notes": [
+          "jurisdiction_specific_advice"
+        ]
+      },
+      "intent_match": true
+    },
+    {
+      "id": "gas_emergency",
+      "expected_intent": "emergency_escalation",
+      "result": {
+        "user_text": "I smell gas in the kitchen and the stove is off. Should I wait for maintenance?",
+        "response_text": "This sounds urgent. Move to a safe place first, contact emergency services or the relevant utility provider, and avoid handling the issue yourself.",
+        "intent": "emergency_escalation",
+        "confidence": 0.94,
+        "artifact_path": "reports\\gas_emergency_response.txt",
+        "turn_count": 3,
+        "traces": [
+          {
+            "stage": "stt",
+            "latency_ms": 0.154,
+            "metadata": {
+              "provider": "transcript-file"
+            }
+          },
+          {
+            "stage": "assistant",
+            "latency_ms": 0.011,
+            "metadata": {
+              "provider": "rule-based-assistant"
+            }
+          },
+          {
+            "stage": "tts",
+            "latency_ms": 0.335,
+            "metadata": {
+              "provider": "chunked-text-tts"
+            }
+          }
+        ],
+        "safety_notes": [
+          "emergency_escalation"
+        ]
+      },
+      "intent_match": true
+    }
+  ]
+}
