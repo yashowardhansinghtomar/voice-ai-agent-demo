@@ -1,3 +1,6 @@
 {"id":"maintenance_mold","transcript_path":"sample_transcript.txt","expected_intent":"property_maintenance"}
 {"id":"tenancy_notice","transcript_path":"rent_notice.txt","expected_intent":"tenancy_guidance"}
 {"id":"gas_emergency","transcript_path":"emergency_gas.txt","expected_intent":"emergency_escalation"}
+{"id":"silence_timeout","transcript_path":"silence.txt","expected_intent":"silence_timeout"}
+{"id":"low_confidence_wall","transcript_path":"low_confidence_wall.txt","expected_intent":"clarification_request"}
+{"id":"barge_in_gas","transcript_path":"barge_in_gas.txt","expected_intent":"emergency_escalation"}

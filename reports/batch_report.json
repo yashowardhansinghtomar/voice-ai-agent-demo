@@ -1,10 +1,41 @@
 {
-  "scenario_count": 3,
+  "scenario_count": 6,
   "intent_accuracy": 1.0,
   "average_latency_ms": {
-    "stt": 0.158,
-    "assistant": 0.012,
-    "tts": 0.383
+    "stt": 0.895,
+    "assistant": 0.031,
+    "tts": 2.114
+  },
+  "latency_summary_ms": {
+    "stt": {
+      "avg": 0.895,
+      "p50": 0.604,
+      "p95": 2.189,
+      "max": 2.714
+    },
+    "assistant": {
+      "avg": 0.031,
+      "p50": 0.028,
+      "p95": 0.061,
+      "max": 0.071
+    },
+    "tts": {
+      "avg": 2.114,
+      "p50": 1.034,
+      "p95": 5.71,
+      "max": 6.95
+    }
+  },
+  "event_counts": {
+    "silence": 1,
+    "barge_in": 1
+  },
+  "safety_note_counts": {
+    "jurisdiction_specific_advice": 1,
+    "emergency_escalation": 2,
+    "silence_detected": 1,
+    "low_confidence_transcript": 1,
+    "barge_in_handled": 1
   },
   "results": [
     {
@@ -20,27 +51,29 @@
         "traces": [
           {
             "stage": "stt",
-            "latency_ms": 0.184,
+            "latency_ms": 2.714,
             "metadata": {
               "provider": "transcript-file"
             }
           },
           {
             "stage": "assistant",
-            "latency_ms": 0.015,
+            "latency_ms": 0.071,
             "metadata": {
               "provider": "rule-based-assistant"
             }
           },
           {
             "stage": "tts",
-            "latency_ms": 0.469,
+            "latency_ms": 6.95,
             "metadata": {
-              "provider": "chunked-text-tts"
+              "provider": "text-file-tts"
             }
           }
         ],
-        "safety_notes": []
+        "safety_notes": [],
+        "transcript_confidence": 1.0,
+        "events": []
       },
       "intent_match": true
     },
@@ -57,29 +90,31 @@
         "traces": [
           {
             "stage": "stt",
-            "latency_ms": 0.136,
+            "latency_ms": 0.46,
             "metadata": {
               "provider": "transcript-file"
             }
           },
           {
             "stage": "assistant",
-            "latency_ms": 0.009,
+            "latency_ms": 0.03,
             "metadata": {
               "provider": "rule-based-assistant"
             }
           },
           {
             "stage": "tts",
-            "latency_ms": 0.344,
+            "latency_ms": 0.846,
             "metadata": {
-              "provider": "chunked-text-tts"
+              "provider": "text-file-tts"
             }
           }
         ],
         "safety_notes": [
           "jurisdiction_specific_advice"
-        ]
+        ],
+        "transcript_confidence": 1.0,
+        "events": []
       },
       "intent_match": true
     },
@@ -96,28 +131,158 @@
         "traces": [
           {
             "stage": "stt",
-            "latency_ms": 0.154,
+            "latency_ms": 0.606,
             "metadata": {
               "provider": "transcript-file"
             }
           },
           {
             "stage": "assistant",
-            "latency_ms": 0.011,
+            "latency_ms": 0.027,
             "metadata": {
               "provider": "rule-based-assistant"
             }
           },
           {
             "stage": "tts",
-            "latency_ms": 0.335,
+            "latency_ms": 1.204,
             "metadata": {
-              "provider": "chunked-text-tts"
+              "provider": "text-file-tts"
             }
           }
         ],
         "safety_notes": [
           "emergency_escalation"
+        ],
+        "transcript_confidence": 1.0,
+        "events": []
+      },
+      "intent_match": true
+    },
+    {
+      "id": "silence_timeout",
+      "expected_intent": "silence_timeout",
+      "result": {
+        "user_text": "",
+        "response_text": "I did not catch that. Could you repeat the issue in one short sentence?",
+        "intent": "silence_timeout",
+        "confidence": 0.98,
+        "artifact_path": "reports\\silence_timeout_response.txt",
+        "turn_count": 3,
+        "traces": [
+          {
+            "stage": "stt",
+            "latency_ms": 0.602,
+            "metadata": {
+              "provider": "transcript-file"
+            }
+          },
+          {
+            "stage": "assistant",
+            "latency_ms": 0.013,
+            "metadata": {
+              "provider": "rule-based-assistant"
+            }
+          },
+          {
+            "stage": "tts",
+            "latency_ms": 1.99,
+            "metadata": {
+              "provider": "text-file-tts"
+            }
+          }
+        ],
+        "safety_notes": [
+          "silence_detected"
+        ],
+        "transcript_confidence": 1.0,
+        "events": [
+          "silence"
+        ]
+      },
+      "intent_match": true
+    },
+    {
+      "id": "low_confidence_wall",
+      "expected_intent": "clarification_request",
+      "result": {
+        "user_text": "There is something on the wall maybe, but I am not sure what I said.",
+        "response_text": "I may have misheard that. Could you confirm the issue before I suggest next steps?",
+        "intent": "clarification_request",
+        "confidence": 0.42,
+        "artifact_path": "reports\\low_confidence_wall_response.txt",
+        "turn_count": 3,
+        "traces": [
+          {
+            "stage": "stt",
+            "latency_ms": 0.616,
+            "metadata": {
+              "provider": "transcript-file"
+            }
+          },
+          {
+            "stage": "assistant",
+            "latency_ms": 0.014,
+            "metadata": {
+              "provider": "rule-based-assistant"
+            }
+          },
+          {
+            "stage": "tts",
+            "latency_ms": 0.863,
+            "metadata": {
+              "provider": "text-file-tts"
+            }
+          }
+        ],
+        "safety_notes": [
+          "low_confidence_transcript"
+        ],
+        "transcript_confidence": 0.42,
+        "events": []
+      },
+      "intent_match": true
+    },
+    {
+      "id": "barge_in_gas",
+      "expected_intent": "emergency_escalation",
+      "result": {
+        "user_text": "Stop, I smell gas now and need help.",
+        "response_text": "I stopped the previous response. This sounds urgent. Move to a safe place first, contact emergency services or the relevant utility provider, and avoid handling the issue yourself.",
+        "intent": "emergency_escalation",
+        "confidence": 0.94,
+        "artifact_path": "reports\\barge_in_gas_response.txt",
+        "turn_count": 4,
+        "traces": [
+          {
+            "stage": "stt",
+            "latency_ms": 0.372,
+            "metadata": {
+              "provider": "transcript-file"
+            }
+          },
+          {
+            "stage": "assistant",
+            "latency_ms": 0.03,
+            "metadata": {
+              "provider": "rule-based-assistant"
+            }
+          },
+          {
+            "stage": "tts",
+            "latency_ms": 0.831,
+            "metadata": {
+              "provider": "text-file-tts"
+            }
+          }
+        ],
+        "safety_notes": [
+          "emergency_escalation",
+          "barge_in_handled"
+        ],
+        "transcript_confidence": 1.0,
+        "events": [
+          "barge_in"
         ]
       },
       "intent_match": true

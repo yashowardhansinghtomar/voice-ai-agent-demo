@@ -20,6 +20,7 @@ class VoiceAgentPipelineTest(unittest.TestCase):
             self.assertEqual(result.turn_count, 1)
             self.assertEqual(result.intent, "property_maintenance")
             self.assertGreaterEqual(result.confidence, 0.9)
+            self.assertEqual(result.transcript_confidence, 1.0)
             self.assertIn("mold", result.user_text.lower())
             self.assertTrue(output.exists())
             self.assertIn("maintenance", output.read_text(encoding="utf-8"))
@@ -38,6 +39,54 @@ class VoiceAgentPipelineTest(unittest.TestCase):
             self.assertEqual(result.intent, "tenancy_guidance")
             self.assertEqual(result.safety_notes, ["jurisdiction_specific_advice"])
             self.assertIn("\n", output.read_text(encoding="utf-8"))
+
+    def test_silence_is_handled_without_committing_history(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            transcript = tmp_path / "input.txt"
+            output = tmp_path / "response.txt"
+            transcript.write_text("# event: silence\n", encoding="utf-8")
+
+            result = build_pipeline().run_turn(transcript, output)
+
+            self.assertEqual(result.intent, "silence_timeout")
+            self.assertEqual(result.turn_count, 0)
+            self.assertIn("silence_detected", result.safety_notes)
+            self.assertIn("repeat", result.response_text.lower())
+
+    def test_low_confidence_transcript_requests_confirmation(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            transcript = tmp_path / "input.txt"
+            output = tmp_path / "response.txt"
+            transcript.write_text(
+                "# confidence: 0.42\nThere is something on the wall maybe.",
+                encoding="utf-8",
+            )
+
+            result = build_pipeline().run_turn(transcript, output)
+
+            self.assertEqual(result.intent, "clarification_request")
+            self.assertEqual(result.transcript_confidence, 0.42)
+            self.assertEqual(result.turn_count, 0)
+            self.assertIn("low_confidence_transcript", result.safety_notes)
+
+    def test_barge_in_interrupts_previous_response_and_routes_new_intent(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            transcript = tmp_path / "input.txt"
+            output = tmp_path / "response.txt"
+            transcript.write_text(
+                "# event: barge_in\nStop, I smell gas now.",
+                encoding="utf-8",
+            )
+
+            result = build_pipeline().run_turn(transcript, output)
+
+            self.assertEqual(result.intent, "emergency_escalation")
+            self.assertEqual(result.events, ["barge_in"])
+            self.assertIn("barge_in_handled", result.safety_notes)
+            self.assertIn("stopped the previous response", result.response_text.lower())
 
     def test_batch_scenarios_create_accuracy_summary(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -77,6 +126,7 @@ class VoiceAgentPipelineTest(unittest.TestCase):
 
             self.assertEqual(summary["scenario_count"], 2)
             self.assertEqual(summary["intent_accuracy"], 1.0)
+            self.assertIn("p95", summary["latency_summary_ms"]["stt"])
             self.assertIn("Average Latency", report)
             self.assertTrue((output_dir / "maintenance_response.txt").exists())
 

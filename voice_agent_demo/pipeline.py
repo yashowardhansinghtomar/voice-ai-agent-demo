@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from voice_agent_demo.models import ConversationTurn, TurnResult
+from voice_agent_demo.models import ConversationTurn, TranscriptResult, TurnResult
 from voice_agent_demo.tracing import stage_timer
 
 
@@ -16,25 +16,30 @@ class VoiceAgentPipeline:
         traces = []
 
         with stage_timer("stt", traces, provider=self.stt_provider.provider_name):
-            user_text = self.stt_provider.transcribe(input_path)
+            transcript = self._normalize_transcript(self.stt_provider.transcribe(input_path))
 
         with stage_timer("assistant", traces, provider=self.assistant_provider.provider_name):
-            assistant_response = self.assistant_provider.respond(user_text, history=self.history)
+            assistant_response = self.assistant_provider.respond(
+                transcript.text,
+                history=self.history,
+                transcript=transcript,
+            )
 
         with stage_timer("tts", traces, provider=self.tts_provider.provider_name):
             artifact_path = self.tts_provider.synthesize(assistant_response.text, output_path)
 
-        self.history.append(
-            ConversationTurn(
-                user=user_text,
-                assistant=assistant_response.text,
-                intent=assistant_response.intent,
-                confidence=assistant_response.confidence,
+        if assistant_response.commit_to_history:
+            self.history.append(
+                ConversationTurn(
+                    user=transcript.text,
+                    assistant=assistant_response.text,
+                    intent=assistant_response.intent,
+                    confidence=assistant_response.confidence,
+                )
             )
-        )
 
         return TurnResult(
-            user_text=user_text,
+            user_text=transcript.text,
             response_text=assistant_response.text,
             intent=assistant_response.intent,
             confidence=assistant_response.confidence,
@@ -42,6 +47,8 @@ class VoiceAgentPipeline:
             turn_count=len(self.history),
             traces=traces,
             safety_notes=assistant_response.safety_notes,
+            transcript_confidence=transcript.confidence,
+            events=transcript.events,
         )
 
     def run_batch(self, scenarios, output_dir):
@@ -64,3 +71,7 @@ class VoiceAgentPipeline:
 
         return results
 
+    def _normalize_transcript(self, transcript):
+        if isinstance(transcript, TranscriptResult):
+            return transcript
+        return TranscriptResult(text=str(transcript).strip())
